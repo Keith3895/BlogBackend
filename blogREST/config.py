@@ -5,6 +5,9 @@ import os
 class BaseConfig(object):
     DEBUG = False
     TESTING = False
+    MONGOALCHEMY_CONNECTION_STRING ='mongodb://localhost:27017/'
+    MONGOALCHEMY_DATABASE = "pyTest"
+    MONGODB_URL ='mongodb://localhost:27017/pyTest'
 
 
 class DevelopmentConfig(BaseConfig):
