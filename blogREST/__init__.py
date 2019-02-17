@@ -1,17 +1,16 @@
-from flask import Flask, Blueprint
-from flask_restful import Resource,Api
-from blogREST.resources.post.controllers import postInfo
+from flask import Flask
+from flask_restplus import Resource,Api
+from blogREST.resources.user.controllers import user_blueprint
+from blogREST.resources.auth.controllers import auth_blueprint
 from blogREST.common.utils import get_instance_folder_path
 from blogREST.config import configure_app
-from pymodm import connect
+# from pymodm import connect
 
 app = Flask(__name__, instance_path=get_instance_folder_path(),
             instance_relative_config=True)
 
-configure_app(app)
+app.secret_key = "Blog API secret key for sessions"
 
-connect(app.config['MONGODB_URL'],alias='test')
-api = Api(app)
+app.register_blueprint(auth_blueprint, url_prefix='/api')
+app.register_blueprint(user_blueprint, url_prefix='/api/user')
 
-
-api.add_resource(postInfo,'/postInfo')

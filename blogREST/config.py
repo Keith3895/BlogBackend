@@ -1,13 +1,15 @@
 import os
 
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 
 
 class BaseConfig(object):
     DEBUG = False
     TESTING = False
     MONGOALCHEMY_CONNECTION_STRING ='mongodb://localhost:27017/'
-    MONGOALCHEMY_DATABASE = "pyTest"
-    MONGODB_URL ='mongodb://localhost:27017/pyTest'
+    MONGOALCHEMY_DATABASE = "blog-api"
+    MONGODB_URL ='mongodb://keimo:keimo123@ds141924.mlab.com:41924/blog-db'
 
 
 class DevelopmentConfig(BaseConfig):
