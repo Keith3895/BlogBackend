@@ -5,7 +5,7 @@ import os
 ######  RETURNS THE MONGO DB COLLECTION FROM THE DB  #######
 
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb://keimo:keimo123@ds141924.mlab.com:41924/blog-db"
+app.config["MONGO_URI"] = os.getenv('mongourl')
 mongo = PyMongo(app)
 
 def get_mongo_collection(CollectionName):

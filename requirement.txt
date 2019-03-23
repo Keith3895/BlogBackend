@@ -1,0 +1,6 @@
+flask == 1.0.2
+flask_pymongo == 2.2.0
+flask_restplus == 0.12.1
+flask_dance == 1.4.0
+python-dotenv == 0.10.1
+pymodm  == 0.4.1

@@ -1,7 +1,11 @@
+import os
 from pymodm import MongoModel, fields
 from pymodm.connection import connect
 
-connect("mongodb://keimo:keimo123@ds141924.mlab.com:41924/blog-db", alias="blog-api")
+from dotenv import load_dotenv
+load_dotenv()
+
+connect(os.getenv('mongourl'), alias="blog-api")
 
 class User(MongoModel):
     email = fields.EmailField(required=True)
