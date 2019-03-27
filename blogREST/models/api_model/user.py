@@ -18,7 +18,13 @@ user_model_for_admin = {
     'dob': fields.Date
 }
 
+return_token_model =  {
+    'access_token': fields.String(required=True),
+    'refresh_token': fields.String(required=True)
+}
+
 post_user_model = {
+    'username': fields.String(required=True, description="User Name"),
     'email': fields.String(required=True, description="Email address"),
     'password': fields.String(required=True, description="Password"),
     'first_name': fields.String(required=True, description="First name"),
@@ -30,7 +36,3 @@ def get_user_model(req_type='GET'):
     if req_type == 'POST':
         return post_user_model
     return user_model_non_admin
-
-
-
-
