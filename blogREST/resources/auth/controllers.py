@@ -1,6 +1,7 @@
 ####### STANDARD/INSTALLED PACKAGES #######
+from blogREST.common.utils import token_required
 from flask import current_app, request, Flask, Blueprint, jsonify, redirect, url_for, session
-from flask_restplus import Resource, Api, fields
+from flask_restplus import Resource, Api, fields, Namespace
 from flask_pymongo import PyMongo
 from flask_dance.contrib.google import make_google_blueprint, google
 import re
@@ -16,20 +17,13 @@ from blogREST.models.refresh import RefreshToken
 from blogREST.models.api_model.user import get_user_model
 from blogREST.common.utils import get_mongo_collection
 
+api = Namespace(
+    'auth', description='Apis to authenticate and authorize users.')
 
-auth_blueprint = make_google_blueprint(
-    client_id="176380596073-606s9n77bkf98gj5pu09fc4v7bujb4ii.apps.googleusercontent.com",
-    client_secret="w2WH9F4VkuknETVMBwOvzAWn",
-    scope=[
-        "https://www.googleapis.com/auth/plus.me",
-        "https://www.googleapis.com/auth/userinfo.email",
-        "https://www.googleapis.com/auth/userinfo.profile"
-    ]
-)
+
 userCollection = get_mongo_collection('User')
 refreshTokenCollection = get_mongo_collection('RefreshToken')
-api = Api(auth_blueprint)
-
+# Api(auth_blueprint)
 
 '''
 API Models
@@ -50,21 +44,19 @@ End of API Models
 '''
 
 
-@api.errorhandler(jwt.ExpiredSignatureError)
-def handle_expired_signature_error(error):
-    return {'message': 'Token expired'}, 401
-
-
-@api.errorhandler(jwt.InvalidTokenError)
-@api.errorhandler(jwt.DecodeError)
-@api.errorhandler(jwt.InvalidIssuerError)
-def handle_invalid_token_error(error):
-    return {'message': 'Token incorrect, supplied or malformed'}, 401
-
-
 @api.route('/oauth/login')
 class googleLogin(Resource):
+
     def get(self):
+        auth_blueprint = make_google_blueprint(
+            client_id=current_app.config['client_id'],
+            client_secret=current_app.config['client_secret'],
+            scope=[
+                "https://www.googleapis.com/auth/plus.me",
+                "https://www.googleapis.com/auth/userinfo.email",
+                "https://www.googleapis.com/auth/userinfo.profile"
+            ]
+        )
         if not google.authorized:
             return redirect(url_for("google.login"))
         resp = google.get("/oauth2/v2/userinfo")
@@ -76,7 +68,17 @@ class googleLogin(Resource):
 
 @api.route('/oauth/logout')
 class googleLogout(Resource):
+
     def get(self):
+        auth_blueprint = make_google_blueprint(
+            client_id=current_app.config['client_id'],
+            client_secret=current_app.config['client_secret'],
+            scope=[
+                "https://www.googleapis.com/auth/plus.me",
+                "https://www.googleapis.com/auth/userinfo.email",
+                "https://www.googleapis.com/auth/userinfo.profile"
+            ]
+        )
         if not google.authorized:
             return {'message': 'You are not logged in! To login go to /api/login'}
         token = auth_blueprint.token["access_token"]
@@ -95,12 +97,12 @@ class googleLogout(Resource):
 
 @api.route('/jwt/login')
 class Log(Resource):
-    '''
-    the following method is called to generate a bson object to insert into 
-    Refresh Token Collection. 
-    '''
 
     def refresTokenGenerator(self, user_id, refresh_token, user_agent_hash):
+        '''
+        the following method is called to generate a bson object to insert into 
+        Refresh Token Collection. 
+        '''
         import collections  # From Python standard library.
         import bson
         from bson.codec_options import CodecOptions
@@ -121,7 +123,7 @@ class Log(Resource):
     @api.response(401, 'Incorrect username or password')
     def post(self):
         """
-        This API implemented JWT. Token's payload contain:
+        This API implements JWT. Token's payload contain:
         'uid' (user id),
         'exp' (expiration date of the token),
         'iat' (the time the token is generated)
@@ -165,6 +167,9 @@ class Refresh(Resource):
     @api.expect(api.model('RefreshToken', {'refresh_token': fields.String(required=True)}), validate=True)
     @api.response(200, 'Success', return_token_model)
     def post(self):
+        '''
+        Call this api to refresh the token.
+        '''
         _refresh_token = api.payload['refresh_token']
         try:
             payload = jwt.decode(
@@ -184,7 +189,7 @@ class Refresh(Resource):
                                          'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30),
                                          'iat': datetime.datetime.utcnow()},
                                         current_app.config['SECRET_KEY']).decode('utf-8')
-            
+
             refresh_token['refresh_token'] = _refresh_token
             refreshTokenCollection.update(
                 {"user_id": payload['uid'], "refresh_token": _refresh_token}, refresh_token)
@@ -198,3 +203,11 @@ class Refresh(Resource):
         except:
             # print(e)
             api.abort(401, 'Unknown token error')
+
+
+# This resource only for test
+@api.route('/protected', doc=False)
+class Protected(Resource):
+    @token_required
+    def get(self, current_user):
+        return {'i am': 'protected', 'uid': current_user['uid']}

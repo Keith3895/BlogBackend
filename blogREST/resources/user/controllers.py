@@ -1,6 +1,6 @@
 ####### STANDARD/INSTALLED PACKAGES #######
 from flask import Flask, Blueprint, jsonify, redirect, url_for, session
-from flask_restplus import Resource, Api, fields
+from flask_restplus import Resource, Api, fields, Namespace
 from flask_pymongo import PyMongo
 import re
 
@@ -11,8 +11,8 @@ from blogREST.models.api_model.user import get_user_model
 from blogREST.common.utils import get_mongo_collection
 from blogREST.common.Exception import ValidationException
 from blogREST.common.utils import hash_password
-user_blueprint = Blueprint('user', __name__)
-api = Api(user_blueprint)
+from blogREST.resources.auth.controllers import token_required
+api = Namespace('user', description='Apis to perform user centeric actions.')
 
 userCollection = get_mongo_collection('User')
 
@@ -27,14 +27,14 @@ UserData = {
 }
 
 
-@api.errorhandler(ValidationException)
-def handle_validation_exception(error):
-    return {'message': 'Validation error', 'errors': {error.error_field_name: error.message}}, 400
+
+
 
 @api.route('/list')
 class List(Resource):
-    # @api.doc('List users')
+    @api.doc('List users')
     # @api.marshal_with(user_model_for_GET)
+    @token_required
     def get(self):
         if 'user_id' in session:
             return {'message': 'You are logged in!'}
