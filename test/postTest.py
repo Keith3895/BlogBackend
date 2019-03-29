@@ -1,5 +1,5 @@
 import unittest 
-import run
+import ..run
 
 class blogTests(unittest.TestCase): 
 
