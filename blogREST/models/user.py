@@ -9,6 +9,7 @@ class User(MongoModel):
     first_name = fields.CharField(required=True)
     last_name = fields.CharField(required=True)
     dob = fields.DateTimeField()
+    resgistered_on = fields.DateTimeField(required=True)
 
     class Meta:
         connection_alias = 'blog-api'
