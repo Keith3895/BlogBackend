@@ -10,6 +10,25 @@ from blogREST.common.utils import get_mongo_collection
 from blogREST.models.api_model.post import get_post_model
 
 
+'''
+project and limit is used for the aggrigate query that is used 
+to fetch the response from the database.
+'''
+
+project = {
+    "$project":
+        {
+            "slug": 1,
+            "title": 1,
+            "author": 1,
+            "CreatDate": 1,
+            "tags": 1,
+            "content": {"$substr": ["$content", 0, 20]}
+        }
+}
+limit = 10
+
+
 authorizations = {
     'apikey': {
         'type': 'token',
@@ -40,6 +59,7 @@ class postInfo(Resource):
         return dumps(postCollection.find({}))
 
     @api.marshal_with(postResModel)
+    @api.expect(postResModel)
     @api.header('application/json')
     @api.doc(security='apikey')
     @token_required
@@ -80,6 +100,12 @@ class GetBlog(Resource):
 
 @api.route('/list/date/<date>/<pageNumber>',
            '/list/date/<fromDate>/<toDate>/<pageNumber>')
+@api.doc(params={
+    'date': 'the date filter to retrive blog posts.',
+    'pageNumber': 'The page number to be retrieved.',
+    'fromDate': 'the from date value for range filter.',
+    'toDate': 'the End date value for range filter.'
+})
 class ListByDate(Resource):
     postResModel = api.model('Add New Blog Post', get_post_model('GET'))
     project = {
@@ -89,13 +115,16 @@ class ListByDate(Resource):
             "title": 1,
             "author": 1,
             "CreatDate": 1,
-            "content": {"$substr": ["$content", 0, 20]}
+            "content": {"$substr": ["$content", 0, 20]},
+            "tags": 1,
         }
     }
-    limit =10
-    
+    limit = 10
+
     @api.header('application/json')
-    def get(self, date=None, fromDate=None, toDate=None,pageNumber=1):
+    def get(self, date=None, fromDate=None, toDate=None, pageNumber=1):
+        if isinstance(pageNumber,str):
+            pageNumber = int(pageNumber,2)
         import datetime
         if date:
             match = {
@@ -116,11 +145,56 @@ class ListByDate(Resource):
                 }
             }
 
-        skips = self.limit * (pageNumber - 1)
+        skips = limit * (pageNumber - 1)
         postsList = postCollection.aggregate([
             match,
-            self.project,
-            {"$skip":skips},
-            {"$limit":self.limit}
+            project,
+            {"$skip": skips},
+            {"$limit": limit},
+            {"$sort": {'CreatDate': -1}}
+        ])
+        return dumps(postsList)
+
+
+@api.doc(params={
+    'pageNumber': 'The page number to be retrieved.'
+})
+@api.route('/list/<pageNumber>')
+class GeneralList(Resource):
+    def get(self, pageNumber=1):
+        if isinstance(pageNumber,str):
+            pageNumber = int(pageNumber,2)
+        skips = limit * (pageNumber - 1)
+        postsList = postCollection.aggregate([
+            project,
+            {"$skip": skips},
+            {"$limit": limit},
+            {"$sort": {'CreatDate': -1}}
+        ])
+        return dumps(postsList)
+
+    @api.expect(api.model('test', {
+        "tags": fields.List(fields.String)
+    }))
+    def post(self, pageNumber=1):
+        if isinstance(pageNumber,str):
+            pageNumber = int(pageNumber,2)
+        tags = api.payload['tags']
+        print(tags)
+        match = {
+            "$match": {
+                "tags": {
+                    "$in": tags
+                }
+            }
+        }
+
+        skips = limit * (pageNumber - 1)
+        postsList = postCollection.aggregate([
+            match,
+            project,
+            {"$skip": skips},
+            {"$limit": limit},
+            {"$sort": {'CreatDate': -1}}
         ])
         return dumps(postsList)
