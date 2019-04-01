@@ -3,7 +3,6 @@ from blogREST.common.utils import token_required
 from flask import current_app, request, Flask, Blueprint, jsonify, redirect, url_for, session
 from flask_restplus import Resource, Api, fields, Namespace
 from flask_pymongo import PyMongo
-from flask_dance.contrib.google import make_google_blueprint, google
 import re
 import jwt
 import datetime
@@ -42,57 +41,6 @@ return_token_model = api.model('ReturnToken', {
 '''
 End of API Models
 '''
-
-
-@api.route('/oauth/login')
-class googleLogin(Resource):
-
-    def get(self):
-        auth_blueprint = make_google_blueprint(
-            client_id=current_app.config['client_id'],
-            client_secret=current_app.config['client_secret'],
-            scope=[
-                "https://www.googleapis.com/auth/plus.me",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile"
-            ]
-        )
-        if not google.authorized:
-            return redirect(url_for("google.login"))
-        resp = google.get("/oauth2/v2/userinfo")
-        assert resp.ok, resp.text
-        session['user_id'] = resp.json()["email"]
-        # return "You are {email} on Google".format(email=resp.json()["email"])
-        return resp.json()
-
-
-@api.route('/oauth/logout')
-class googleLogout(Resource):
-
-    def get(self):
-        auth_blueprint = make_google_blueprint(
-            client_id=current_app.config['client_id'],
-            client_secret=current_app.config['client_secret'],
-            scope=[
-                "https://www.googleapis.com/auth/plus.me",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/userinfo.profile"
-            ]
-        )
-        if not google.authorized:
-            return {'message': 'You are not logged in! To login go to /api/login'}
-        token = auth_blueprint.token["access_token"]
-        email = session["user_id"]
-        resp = google.post('https://accounts.google.com/o/oauth2/revoke',
-                           params={'token': token},
-                           headers={
-                               'content-type': 'application/x-www-form-urlencoded'}
-                           )
-        if resp.ok:
-            session.clear()
-            # logout_user()
-            message = f'User {email} is successfully logged out'
-            return {'message': message}
 
 
 @api.route('/jwt/login')

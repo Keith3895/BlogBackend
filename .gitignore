@@ -5,3 +5,6 @@ __pycache__/
 Pipfile
 .env
 Pipfile.lock
+/data
+/diagnostic.data
+/journal
