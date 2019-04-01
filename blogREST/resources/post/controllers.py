@@ -29,7 +29,6 @@ project = {
 limit = 10
 
 
-
 authorizations = {
     'apikey': {
         'type': 'token',
@@ -44,6 +43,7 @@ api = Namespace('post', description='Blog post related apis.',
 
 postCollection = get_mongo_collection('Post')
 postResModel = api.model('Add New Blog Post', get_post_model('GET'))
+
 
 @api.doc('Blog Post')
 @api.route('/blog')
@@ -107,7 +107,7 @@ class GetBlog(Resource):
     'toDate': 'the End date value for range filter.'
 })
 class ListByDate(Resource):
-    
+
     project = {
         "$project":
         {
@@ -124,24 +124,27 @@ class ListByDate(Resource):
     @api.header('application/json')
     @api.marshal_with(postResModel)
     def get(self, date=None, fromDate=None, toDate=None, pageNumber=1):
-        if isinstance(pageNumber,str):
-            pageNumber = int(pageNumber,2)
+        if isinstance(pageNumber, str):
+            pageNumber = int(pageNumber, 2)
         import datetime
         if date:
+            date = datetime.datetime.strptime(date, '%Y-%m-%d')
             match = {
                 "$match": {
                     "CreatDate": {
-                        "$gte": datetime.datetime.strptime(date, '%Y-%m-%d'),
-                        "$lt": (datetime.datetime.strptime(date, '%Y-%m-%d')+datetime.timedelta(days=1))
+                        "$gte": date,
+                        "$lt": (date+datetime.timedelta(days=1))
                     }
                 }
             }
         else:
+            fromDate = datetime.datetime.strptime(fromDate, '%Y-%m-%d')
+            toDate = datetime.datetime.strptime(toDate, '%Y-%m-%d')
             match = {
                 "$match": {
                     "CreatDate": {
-                        "$gte": datetime.datetime.strptime(fromDate, '%Y-%m-%d'),
-                        "$lt": datetime.datetime.strptime(toDate, '%Y-%m-%d'),
+                        "$gte": fromDate,
+                        "$lt": toDate,
                     }
                 }
             }
@@ -164,8 +167,8 @@ class ListByDate(Resource):
 @api.route('/list/<pageNumber>')
 class GeneralList(Resource):
     def get(self, pageNumber=1):
-        if isinstance(pageNumber,str):
-            pageNumber = int(pageNumber,2)
+        if isinstance(pageNumber, str):
+            pageNumber = int(pageNumber, 2)
         skips = limit * (pageNumber - 1)
         postsList = postCollection.aggregate([
             project,
@@ -183,8 +186,8 @@ class GeneralList(Resource):
         '''
         Api returns list of blog posts with pagesize = 10.
         '''
-        if isinstance(pageNumber,str):
-            pageNumber = int(pageNumber,2)
+        if isinstance(pageNumber, str):
+            pageNumber = int(pageNumber, 2)
         tags = api.payload['tags']
         match = {
             "$match": {
