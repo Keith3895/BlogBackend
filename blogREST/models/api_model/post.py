@@ -3,7 +3,6 @@ from flask_restplus import fields
 contentPost = {
     'slug': fields.String,
     'title': fields.String,
-    'user_id': fields.String,
     'content': fields.String,
     'CreatDate': fields.Date,
     'author': fields.String,

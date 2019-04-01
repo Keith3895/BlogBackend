@@ -29,6 +29,7 @@ project = {
 limit = 10
 
 
+
 authorizations = {
     'apikey': {
         'type': 'token',
@@ -42,7 +43,7 @@ api = Namespace('post', description='Blog post related apis.',
 # api = Api(postInfo_blueprint,)
 
 postCollection = get_mongo_collection('Post')
-
+postResModel = api.model('Add New Blog Post', get_post_model('GET'))
 
 @api.doc('Blog Post')
 @api.route('/blog')
@@ -66,7 +67,6 @@ class postInfo(Resource):
     def post(self, current_user):
         import uuid
         import datetime
-        print(api.payload)
 
         postContent = api.payload
         postContent['slug'] = uuid.uuid4().hex
@@ -107,7 +107,7 @@ class GetBlog(Resource):
     'toDate': 'the End date value for range filter.'
 })
 class ListByDate(Resource):
-    postResModel = api.model('Add New Blog Post', get_post_model('GET'))
+    
     project = {
         "$project":
         {
@@ -122,6 +122,7 @@ class ListByDate(Resource):
     limit = 10
 
     @api.header('application/json')
+    @api.marshal_with(postResModel)
     def get(self, date=None, fromDate=None, toDate=None, pageNumber=1):
         if isinstance(pageNumber,str):
             pageNumber = int(pageNumber,2)
@@ -159,6 +160,7 @@ class ListByDate(Resource):
 @api.doc(params={
     'pageNumber': 'The page number to be retrieved.'
 })
+@api.marshal_with(postResModel)
 @api.route('/list/<pageNumber>')
 class GeneralList(Resource):
     def get(self, pageNumber=1):
@@ -176,11 +178,14 @@ class GeneralList(Resource):
     @api.expect(api.model('test', {
         "tags": fields.List(fields.String)
     }))
+    @api.header('application/json')
     def post(self, pageNumber=1):
+        '''
+        Api returns list of blog posts with pagesize = 10.
+        '''
         if isinstance(pageNumber,str):
             pageNumber = int(pageNumber,2)
         tags = api.payload['tags']
-        print(tags)
         match = {
             "$match": {
                 "tags": {
