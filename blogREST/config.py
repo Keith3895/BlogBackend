@@ -9,22 +9,23 @@ os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 class BaseConfig(object):
     DEBUG = False
     TESTING = False
-    MONGODB_URL = os.getenv('mongourl')
-    MONGO_URI = os.getenv('mongourl')
+    
 
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = False
     TESTING = True
-    secret_key = os.getenv('secret_key')
+    SECRET_KEY = os.getenv('secret_key')
     client_id= os.getenv('client_id')
     client_secret= os.getenv('client_secret')
+    MONGODB_URL = os.getenv('mongourl')
+    MONGO_URI = os.getenv('mongourl')
 
 
 class TestingConfig(BaseConfig):
     DEBUG = False
     TESTING = True
-    secret_key = os.getenv('secret_key')
+    SECRET_KEY = os.getenv('secret_key')
 
 
 
@@ -36,7 +37,7 @@ config = {
 
 
 def configure_app(app):
-    config_name = os.getenv('FLASK_CONFIGURATION', 'default')
+    config_name = os.getenv('', 'default')
     app.config.from_object(config[config_name])
     # return config
     # app.config.from_pyfile('config.cfg', silent=True)

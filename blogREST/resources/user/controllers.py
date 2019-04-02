@@ -27,14 +27,10 @@ UserData = {
 }
 
 
-
-
-
 @api.route('/list')
 class List(Resource):
     @api.doc('List users')
     # @api.marshal_with(user_model_for_GET)
-    @token_required
     def get(self):
         if 'user_id' in session:
             return {'message': 'You are logged in!'}

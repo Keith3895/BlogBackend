@@ -1,4 +1,4 @@
-from blogREST import app
+from blogREST import server
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    server.run() 
