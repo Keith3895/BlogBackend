@@ -62,7 +62,7 @@ def test_login(client):
     assert 'access_token' in response.json
 
 
-@pytest.mark.run(after='test_login')
+@pytest.mark.run(order=4)
 def test_addPost(client):
     access_token = getAccess(client)
     mimetype = 'application/json'
@@ -102,7 +102,7 @@ def getAccess(client):
     return response.json['access_token']
 
 
-@pytest.mark.run(after='test_addPost')
+@pytest.mark.run(order=5)
 def test_mongoClear(client):
     from pymongo import MongoClient
     connectionString = os.getenv('mongourl')

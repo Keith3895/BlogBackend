@@ -10,4 +10,4 @@ script:
 - echo $mongourl
 - export Flask_Env=testing
 - echo $Flask_Env
-- python3 -m pytest
+- python3 -m pytest -s
