@@ -147,6 +147,7 @@ class Log(Resource):
 
             refresh_token = refreshTokenCollection.find(
                 {"user_agent_hash": user_agent_hash})
+            list(refresh_token)
             if not len(list(refresh_token)):
                 refresh_token = self.refresTokenGenerator(user_id=user['uid'], refresh_token=_refresh_token,
                                                           user_agent_hash=user_agent_hash)
