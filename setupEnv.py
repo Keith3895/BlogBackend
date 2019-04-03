@@ -42,7 +42,7 @@ def travisCI_env(filename='.env'):
             # check for nonempty variable and content
             elif len(tmp) == 2 and len(tmp[0]) and len(tmp[1]):
                 
-                subprocess.check_call(["travis", "encrypt",'{0}={1}'.format(*tmp), "--add", 'env.{0}'.format(*tmp)])
+                subprocess.check_call(["travis", "env", "set",'{0}'.format(*tmp),'{1}'.format(*tmp), "-p"])
         # subprocess.check_call(unset)
      
 
