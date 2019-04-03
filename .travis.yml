@@ -15,4 +15,5 @@ env:
       secure: kT+I2NBDuEALSZUdaFctXkjummdYgf/ZeKF3Yw74cgKNpW9s+HTG+hXJFJSZePm7t91+KBK9/LSGsdP8Tj78Glh56i/JLrxaRtDj+L9Em8dQfZgonHBPy0VgyA/hfxadU/3bP2uTmrutaxit1D4/yMNqs/h5NyyLogtyQfsxOB7A6eKD/lSXai5zE5pCbkDom6UT3NPgMHWp89jrklLEIsmjVf+w6vhaukvwfqGoncRHWukp6ceqPBG27nkNKGOp8B1JvssttCf7+GuVYbv8E+1GeycC8xkOq1/YRw7gsRPrVZbvfrbWMdu495qAwXOSvwvlgwRqtWfOl3xM+T2RAzYoAMloom9LoGia7IgNHa+pkoTRafwR0SIx+fSzTT2XBWrtwK5JUOCCH44qVK1CjglpF5qRagpGyANaNToxOsPyysjdOrwXUjqoapUy6CcpTbxOxt3D2Ms4TKg/U0t/ZZLU+P7OB8nv/4w3OpTanEGB7JhIfkBRWZYWP93gON9nIDF/oDTNrtTvVbI0zzOjTr6ggzO6KTq4N3jy+XoTQPgf0J5299u4jjW/GsGunNiiG5xVfVE1IKpzBTm4JweYq4aX9QHO6tLjQpHc8GVP4tOc+UvSQPhQn83WZDFQaQ/MmROwh5A2iVbvwy7oign52kxSrLCs2CEKY12PC6s5+w8=
 script:
 - echo $mongourl
+- echo $test
 # - python3 -m pytest
