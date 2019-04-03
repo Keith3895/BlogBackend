@@ -3,6 +3,7 @@ language: python
 sudo: yes
 python:
 - "3.7"
+cache: pip
 install:
 - pip3 install -r requirement.txt
 script:
