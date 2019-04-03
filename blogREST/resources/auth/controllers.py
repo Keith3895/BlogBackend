@@ -145,15 +145,14 @@ class Log(Resource):
             user_agent_string = request.user_agent.string.encode('utf-8')
             user_agent_hash = hashlib.md5(user_agent_string).hexdigest()
 
-            refresh_token = refreshTokenCollection.find(
+            refresh_token = refreshTokenCollection.find_one(
                 {"user_agent_hash": user_agent_hash})
-            list(refresh_token)
-            if not len(list(refresh_token)):
+            if not refresh_token:
                 refresh_token = self.refresTokenGenerator(user_id=user['uid'], refresh_token=_refresh_token,
                                                           user_agent_hash=user_agent_hash)
                 refreshTokenCollection.insert_one(refresh_token)
             else:
-                refresh_token.refresh_token = _refresh_token
+                refresh_token['refresh_token'] = _refresh_token
                 refreshTokenCollection.update(
                     {"user_agent_hash": user_agent_hash}, refresh_token, upsert=True)
 

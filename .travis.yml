@@ -7,7 +7,4 @@ cache: pip
 install:
 - pip3 install -r requirement.txt
 script:
-- echo $mongourl
-- export Flask_Env=testing
-- echo $Flask_Env
 - python3 -m pytest -s
