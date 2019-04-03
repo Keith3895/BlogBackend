@@ -7,7 +7,6 @@ from pymongo import MongoClient
 
 
 connectionString = os.getenv('mongourl')
-print(connectionString)
 client = MongoClient(connectionString)
 db = connectionString.split('/')[3]
 if db:

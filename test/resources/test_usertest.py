@@ -24,6 +24,7 @@ def test_register(client):
     url = '/api/user/register'
 
     response = client.post(url, data=json.dumps(data), headers=headers)
+    print(response.json)
     assert response.content_type == mimetype
     assert isinstance(response.json['username'], str)
     assert data['password'] != response.json['password']
@@ -56,9 +57,7 @@ def test_login(client):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-
     url = '/api/auth/jwt/login'
-
     response = client.post(url, data=json.dumps(data2), headers=headers)
     assert 'access_token' in response.json
 
@@ -111,4 +110,5 @@ def test_mongoClear(client):
     db = connectionString.split('/')[3]
     if db:
         client.drop_database(db)
+        print('clearing Database')
         assert True
