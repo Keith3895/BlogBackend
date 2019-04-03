@@ -1,5 +1,6 @@
 language: python
-sudo: yes
+python:
+  - "3.6"
 install:
 - pip3 install -r requirement.txt
 env:
