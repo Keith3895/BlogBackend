@@ -29,7 +29,7 @@ def travisCalls(config):
         if len(tmp[0]) and tmp[0][0] == '#':
             unset.append(tmp[0][1:])
         # check for nonempty variable and content
-        elif len(tmp) == 2 and len(tmp[0]) and len(tmp[1]):
+        elif len(tmp[0]) and len(tmp[1]):
             tmp[1] = tmp[1].replace("'", "")
             print('{1}'.format(*tmp))
             subprocess.check_call(
