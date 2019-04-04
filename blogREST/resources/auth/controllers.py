@@ -128,6 +128,7 @@ class Log(Resource):
         'exp' (expiration date of the token),
         'iat' (the time the token is generated)
         """
+        print('this got triggered')
         user = userCollection.find_one({"username": api.payload['username']})
         if not user:
             api.abort(401, 'Incorrect username or password')
