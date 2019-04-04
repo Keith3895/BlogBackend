@@ -8,7 +8,7 @@ install:
 - pip3 install -r requirement.txt
 script:
 - export Flask_Env=testing
-- python3 -m pytest
+- python3 -m pytest -s
 
 branches:
   only:
