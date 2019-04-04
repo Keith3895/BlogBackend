@@ -150,6 +150,7 @@ class Log(Resource):
             if not refresh_token:
                 refresh_token = self.refresTokenGenerator(user_id=user['uid'], refresh_token=_refresh_token,
                                                           user_agent_hash=user_agent_hash)
+                print(refresh_token)
                 refreshTokenCollection.insert_one(refresh_token)
             else:
                 refresh_token['refresh_token'] = _refresh_token

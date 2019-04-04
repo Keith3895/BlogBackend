@@ -44,7 +44,7 @@ def travisCI_env(filename='.env'):
                 tmp[1] = tmp[1].replace("'","")
                 print('{1}'.format(*tmp))
                 subprocess.check_call(["travis", "env", "set",'{0}'.format(*tmp),'{1}'.format(*tmp),'-p'])
-        # subprocess.check_call(unset)
+        subprocess.check_call(unset)
      
 
 
