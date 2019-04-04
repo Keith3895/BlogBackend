@@ -128,10 +128,10 @@ class Log(Resource):
         'exp' (expiration date of the token),
         'iat' (the time the token is generated)
         """
-        print('this got triggered')
         user = userCollection.find_one({"username": api.payload['username']})
         if not user:
             api.abort(401, 'Incorrect username or password')
+            
         from blogREST.common.utils import check_password
         if check_password(user['password'], api.payload['password']):
             _access_token = jwt.encode({'uid': user['uid'],

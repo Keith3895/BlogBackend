@@ -21,7 +21,7 @@ class DevelopmentConfig(BaseConfig):
 class TestingConfig(BaseConfig):
     DEBUG = False
     TESTING = True
-    SECRET_KEY = os.getenv('secret_key_test')
+    SECRET_KEY = os.getenv('secret_key')
 
 
 config = {
