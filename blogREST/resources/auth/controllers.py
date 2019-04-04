@@ -147,6 +147,7 @@ class Log(Resource):
 
             refresh_token = refreshTokenCollection.find_one(
                 {"user_agent_hash": user_agent_hash})
+            print('before cond ',refresh_token)
             if not refresh_token:
                 refresh_token = self.refresTokenGenerator(user_id=user['uid'], refresh_token=_refresh_token,
                                                           user_agent_hash=user_agent_hash)
