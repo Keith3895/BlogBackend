@@ -131,7 +131,7 @@ class Log(Resource):
         user = userCollection.find_one({"username": api.payload['username']})
         if not user:
             api.abort(401, 'Incorrect username or password')
-            
+
         from blogREST.common.utils import check_password
         if check_password(user['password'], api.payload['password']):
             _access_token = jwt.encode({'uid': user['uid'],
@@ -148,11 +148,9 @@ class Log(Resource):
 
             refresh_token = refreshTokenCollection.find_one(
                 {"user_agent_hash": user_agent_hash})
-            print('before cond ',refresh_token)
             if not refresh_token:
                 refresh_token = self.refresTokenGenerator(user_id=user['uid'], refresh_token=_refresh_token,
                                                           user_agent_hash=user_agent_hash)
-                print(refresh_token)
                 refreshTokenCollection.insert_one(refresh_token)
             else:
                 refresh_token['refresh_token'] = _refresh_token
